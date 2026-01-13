@@ -83,8 +83,10 @@ export default function ActiveSessionPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className={cn(
-        "glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in",
-        showAIAnswer || showAnalyzeScreen || showChat ? "w-[900px]" : "w-[520px]"
+        "glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in transition-all duration-300",
+        showAIAnswer || showAnalyzeScreen || showChat 
+          ? "w-full max-w-[95vw] lg:max-w-[900px]" 
+          : "w-full max-w-[95vw] sm:max-w-[520px]"
       )}>
         
         {/* Top Action Bar */}
