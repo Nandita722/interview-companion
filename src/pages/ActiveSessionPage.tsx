@@ -6,6 +6,8 @@ import {
   MoreVertical,
   Move,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   X,
   Trash2,
   Mic,
@@ -240,200 +242,264 @@ export default function ActiveSessionPage() {
         </div>
       </div>
 
-      {/* Main Content Container - Only show if transcript or any panel is visible */}
-      {(showTranscript || showAIAnswer || showAnalyzeScreen || showChat) && (
-      <div className="flex-1 flex items-start justify-center p-4">
-        <div className={cn(
-          "glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in transition-all duration-300",
-          showAIAnswer || showAnalyzeScreen || showChat 
-            ? "w-full max-w-[95vw] lg:max-w-[900px]" 
-            : "w-full max-w-[95vw] sm:max-w-[520px]"
-        )}>
+      {/* Main Content Area - Side by side boxes */}
+      <div className="flex-1 flex items-start justify-center gap-4 p-4">
         
-        {/* Status Bar */}
-        <div className="flex items-center justify-between px-3 py-2 bg-muted/30 border-t border-border/30">
-          <div className="flex items-center gap-4">
-            {/* Auto-scroll Toggle */}
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <button
-                type="button"
-                role="switch"
-                aria-checked={autoScroll}
-                onClick={() => setAutoScroll(!autoScroll)}
-                className={cn(
-                  "relative inline-flex h-5 w-10 flex-shrink-0 rounded-full transition-colors",
-                  autoScroll ? "bg-primary" : "bg-muted-foreground/30"
-                )}
-              >
-                <span
-                  className={cn(
-                    "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform",
-                    "absolute top-0.5",
-                    autoScroll ? "translate-x-5" : "translate-x-0.5"
-                  )}
-                />
-              </button>
-              <span className="text-sm font-medium text-foreground">Auto-scroll</span>
-            </label>
+        {/* Transcript Box - Separate floating panel */}
+        {showTranscript && (
+          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
+            {/* Transcript Status Bar */}
+            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+              <div className="flex items-center gap-4">
+                {/* Auto-scroll Toggle */}
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={autoScroll}
+                    onClick={() => setAutoScroll(!autoScroll)}
+                    className={cn(
+                      "relative inline-flex h-5 w-10 flex-shrink-0 rounded-full transition-colors",
+                      autoScroll ? "bg-primary" : "bg-muted-foreground/30"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform",
+                        "absolute top-0.5",
+                        autoScroll ? "translate-x-5" : "translate-x-0.5"
+                      )}
+                    />
+                  </button>
+                  <span className="text-sm font-medium text-foreground">Auto-scroll</span>
+                </label>
 
-            {/* Language */}
-            <span className="text-sm text-muted-foreground">English</span>
-          </div>
-
-          {/* Right side controls */}
-          <div className="flex items-center gap-1.5">
-            {/* Clear Button */}
-            <button 
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Clear transcript"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-
-            {/* Collapse */}
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
-            </button>
-
-            {/* Close - hides transcript box only */}
-            <button
-              onClick={() => setShowTranscript(false)}
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        {isExpanded && (
-          <div className={cn(
-            "flex",
-            (showAIAnswer || showAnalyzeScreen || showChat) && "divide-x divide-border/30"
-          )}>
-            {/* Transcript Panel - Visible when showTranscript is true */}
-            {showTranscript && (
-            <div className={cn(
-              "p-3 flex-1 min-w-0",
-              (showAIAnswer || showAnalyzeScreen || showChat) ? "w-1/2" : "w-full"
-            )}>
-              {/* Listening Input Bar */}
-              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-muted/40 border border-border/50">
-                <span className={cn(
-                  "text-sm",
-                  isListening ? "text-muted-foreground" : "text-muted-foreground/50"
-                )}>
-                  {isListening ? "Listening..." : "Listening off"}
-                </span>
-                <div className="flex-1" />
+                {/* Language */}
+                <span className="text-sm text-muted-foreground">English</span>
               </div>
 
-              {/* Transcript Content */}
-              <div className="mt-3 max-h-[280px] overflow-y-auto custom-scrollbar space-y-3">
-                {mockTranscript.map((item, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground/70">{item.speaker}</span>
-                      <span>·</span>
-                      <span>{item.time}</span>
-                    </div>
-                    <p className="text-sm text-foreground leading-relaxed">
-                      {item.text}
-                    </p>
-                  </div>
-                ))}
+              {/* Right side controls */}
+              <div className="flex items-center gap-1.5">
+                <button 
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title="Clear transcript"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
+                </button>
+                <button
+                  onClick={() => setShowTranscript(false)}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             </div>
-            )}
 
-            {/* AI Answer Panel */}
-            {showAIAnswer && (
-              <div className="w-1/2 p-4 max-h-[340px] overflow-y-auto custom-scrollbar animate-fade-in">
-                <div className="space-y-4">
-                  {/* Question */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-primary" />
+            {/* Transcript Content */}
+            {isExpanded && (
+              <div className="p-3">
+                {/* Listening Input Bar */}
+                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-muted/40 border border-border/50">
+                  <span className={cn(
+                    "text-sm",
+                    isListening ? "text-muted-foreground" : "text-muted-foreground/50"
+                  )}>
+                    {isListening ? "Listening..." : "Listening off"}
+                  </span>
+                  <div className="flex-1" />
+                </div>
+
+                {/* Transcript Messages */}
+                <div className="mt-3 max-h-[280px] overflow-y-auto custom-scrollbar space-y-3">
+                  {mockTranscript.map((item, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground/70">{item.speaker}</span>
+                        <span>·</span>
+                        <span>{item.time}</span>
                       </div>
-                      <span className="text-sm font-medium text-foreground">Question:</span>
-                      <span className="text-sm text-foreground">{mockAIAnswer.question}</span>
+                      <p className="text-sm text-foreground leading-relaxed">
+                        {item.text}
+                      </p>
                     </div>
-                  </div>
-
-                  {/* Answer */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="text-sm font-medium text-foreground">Answer:</span>
-                    </div>
-                    <ul className="space-y-1.5 pl-6">
-                      {mockAIAnswer.answer.map((point, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
-                          <span className="text-foreground mt-1.5">•</span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="pt-2 text-xs text-muted-foreground">
-                    AI Answer · 04:21 AM
-                  </div>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* Analyze Screen Panel */}
-            {showAnalyzeScreen && (
-              <div className="w-1/2 p-4 max-h-[340px] overflow-y-auto custom-scrollbar animate-fade-in">
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Monitor className="w-10 h-10 text-muted-foreground/50 mb-3" />
-                  <span className="text-sm text-muted-foreground">Screen Analysis</span>
-                  <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
-                    Capture and analyze your screen content
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Chat Panel */}
-            {showChat && (
-              <div className="w-1/2 p-4 max-h-[340px] overflow-y-auto custom-scrollbar animate-fade-in">
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Sparkles className="w-10 h-10 text-muted-foreground/50 mb-3" />
-                  <span className="text-sm text-muted-foreground">Chat with AI</span>
-                  <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
-                    Ask follow-up questions or get clarifications
-                  </p>
+            {/* Collapsed State */}
+            {!isExpanded && (
+              <div 
+                className="px-4 py-3 cursor-pointer hover:bg-muted/20 transition-colors"
+                onClick={() => setIsExpanded(true)}
+              >
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/40 border border-border/50">
+                  <span className={cn(
+                    "text-sm",
+                    isListening ? "text-muted-foreground" : "text-muted-foreground/50"
+                  )}>
+                    {isListening ? "Listening..." : "Listening off"}
+                  </span>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Collapsed State */}
-        {!isExpanded && (
-          <div 
-            className="px-4 py-3 cursor-pointer hover:bg-muted/20 transition-colors"
-            onClick={() => setIsExpanded(true)}
-          >
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/40 border border-border/50">
-              <span className={cn(
-                "text-sm",
-                isListening ? "text-muted-foreground" : "text-muted-foreground/50"
-              )}>
-                {isListening ? "Listening..." : "Listening off"}
-              </span>
+        {/* AI Answer Box - Separate floating panel */}
+        {showAIAnswer && (
+          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
+            {/* AI Answer Header Bar */}
+            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+              {/* Left side - Navigation arrows */}
+              <div className="flex items-center gap-1.5">
+                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Right side controls */}
+              <div className="flex items-center gap-1.5">
+                <button 
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title="Delete answer"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setShowAIAnswer(false)}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* AI Answer Content */}
+            <div className="p-4 max-h-[340px] overflow-y-auto custom-scrollbar">
+              <div className="space-y-4">
+                {/* Question */}
+                <div className="flex items-start gap-2">
+                  <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center mt-0.5">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-foreground">Question: </span>
+                    <span className="text-sm text-foreground">{mockAIAnswer.question}</span>
+                  </div>
+                </div>
+
+                {/* Answer */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    <span className="text-sm font-medium text-foreground">Answer:</span>
+                  </div>
+                  <ul className="space-y-1.5 pl-6">
+                    {mockAIAnswer.answer.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                        <span className="text-foreground mt-1.5">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="pt-2 text-xs text-muted-foreground">
+                  AI Answer · 04:21 AM
+                </div>
+              </div>
             </div>
           </div>
         )}
-        </div>
+
+        {/* Analyze Screen Box - Separate floating panel */}
+        {showAnalyzeScreen && (
+          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
+            {/* Header Bar */}
+            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+              <div className="flex items-center gap-1.5">
+                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button 
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setShowAnalyzeScreen(false)}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Monitor className="w-10 h-10 text-muted-foreground/50 mb-3" />
+                <span className="text-sm text-muted-foreground">Screen Analysis</span>
+                <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
+                  Capture and analyze your screen content
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Chat Box - Separate floating panel */}
+        {showChat && (
+          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
+            {/* Header Bar */}
+            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+              <div className="flex items-center gap-1.5">
+                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button 
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setShowChat(false)}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Sparkles className="w-10 h-10 text-muted-foreground/50 mb-3" />
+                <span className="text-sm text-muted-foreground">Chat with AI</span>
+                <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
+                  Ask follow-up questions or get clarifications
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      )}
     </div>
   );
 }
