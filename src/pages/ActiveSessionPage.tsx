@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Sparkles,
   Monitor,
   MoreVertical,
@@ -42,6 +52,7 @@ export default function ActiveSessionPage() {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [autoGenerate, setAutoGenerate] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
 
   const mockTime = "9:43";
   const mockTranscript = [
@@ -333,7 +344,7 @@ export default function ActiveSessionPage() {
                 {/* End Session */}
                 <button 
                   onClick={() => {
-                    navigate("/dashboard");
+                    setShowEndSessionDialog(true);
                     setShowMoreMenu(false);
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-destructive/10 transition-colors text-sm text-destructive border-t border-border/30"
@@ -619,6 +630,27 @@ export default function ActiveSessionPage() {
           </div>
         )}
       </div>
+
+      {/* End Session Confirmation Dialog */}
+      <AlertDialog open={showEndSessionDialog} onOpenChange={setShowEndSessionDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Session</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to end the session? You won't be able to restart it and your credits will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => navigate("/dashboard")}
+              className="bg-foreground text-background hover:bg-foreground/90"
+            >
+              End Session
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
