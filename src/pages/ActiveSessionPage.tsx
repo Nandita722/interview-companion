@@ -93,9 +93,15 @@ export default function ActiveSessionPage() {
     }
   };
 
-  // If minimized, show only the floating icon
+  // If minimized, show only the floating icon with transcribe wave animation
   if (isMinimized) {
-    return <MinimizedIcon onRestore={() => setIsMinimized(false)} />;
+    return (
+      <MinimizedIcon 
+        onRestore={() => setIsMinimized(false)} 
+        variant="transcribe"
+        isListening={isListening}
+      />
+    );
   }
 
   return (
