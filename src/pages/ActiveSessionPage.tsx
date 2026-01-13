@@ -94,7 +94,7 @@ export default function ActiveSessionPage() {
   };
 
   // Draggable position state for minimized icon
-  const [iconPosition, setIconPosition] = useState({ x: window.innerWidth - 80, y: window.innerHeight - 80 });
+  const [iconPosition, setIconPosition] = useState({ x: (window.innerWidth - 56) / 2, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
   const dragOffset = useRef({ x: 0, y: 0 });
 
