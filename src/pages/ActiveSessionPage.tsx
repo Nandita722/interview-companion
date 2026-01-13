@@ -8,10 +8,18 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   X,
   Trash2,
   Mic,
   Star,
+  LayoutGrid,
+  Plus,
+  Minus,
+  RotateCcw,
+  Globe,
+  LogOut,
+  StopCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +36,11 @@ export default function ActiveSessionPage() {
   const [transcribeEnabled, setTranscribeEnabled] = useState(true);
   const [computerAudioEnabled, setComputerAudioEnabled] = useState(true);
   const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
+  
+  // More menu
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [autoGenerate, setAutoGenerate] = useState(true);
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
 
   const mockTime = "9:43";
   const mockTranscript = [
@@ -223,9 +236,102 @@ export default function ActiveSessionPage() {
           </div>
 
           {/* More Menu */}
-          <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors">
-            <MoreVertical className="w-4 h-4" />
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setShowMoreMenu(!showMoreMenu)}
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors"
+            >
+              <MoreVertical className="w-4 h-4" />
+            </button>
+            
+            {/* Dropdown Menu */}
+            {showMoreMenu && (
+              <div className="absolute right-0 top-10 w-56 rounded-xl bg-popover border border-border shadow-xl z-50 overflow-hidden animate-fade-in">
+                {/* User info */}
+                <div className="px-3 py-2 border-b border-border/50 text-xs text-muted-foreground">
+                  More <span className="text-foreground">user@email.com</span>
+                </div>
+                
+                {/* Dashboard */}
+                <button 
+                  onClick={() => {
+                    navigate("/dashboard");
+                    setShowMoreMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/50 transition-colors text-sm text-foreground"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  Dashboard
+                </button>
+                
+                {/* Zoom controls */}
+                <div className="flex items-center justify-between px-3 py-2.5 border-t border-border/30">
+                  <span className="text-sm text-foreground">Zoom</span>
+                  <div className="flex items-center gap-1">
+                    <button className="flex items-center justify-center w-7 h-7 rounded bg-muted/60 text-foreground hover:bg-muted transition-colors">
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="flex items-center justify-center w-7 h-7 rounded bg-muted/60 text-foreground hover:bg-muted transition-colors">
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="flex items-center justify-center w-7 h-7 rounded bg-muted/60 text-foreground hover:bg-muted transition-colors">
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Language selector */}
+                <div className="flex items-center justify-between px-3 py-2.5 border-t border-border/30">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-foreground" />
+                    <span className="text-sm text-foreground">{selectedLanguage}</span>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                </div>
+                
+                {/* Auto Generate toggle */}
+                <div className="flex items-center justify-between px-3 py-2.5 border-t border-border/30">
+                  <span className="text-sm text-foreground">Auto Generate</span>
+                  <button
+                    onClick={() => setAutoGenerate(!autoGenerate)}
+                    className={cn(
+                      "relative inline-flex h-5 w-9 flex-shrink-0 rounded-full transition-colors",
+                      autoGenerate ? "bg-primary" : "bg-muted-foreground/30"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform",
+                        "absolute top-0.5",
+                        autoGenerate ? "translate-x-4" : "translate-x-0.5"
+                      )}
+                    />
+                  </button>
+                </div>
+                
+                {/* Exit */}
+                <button 
+                  onClick={() => setShowMoreMenu(false)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/50 transition-colors text-sm text-foreground border-t border-border/30"
+                >
+                  <X className="w-4 h-4" />
+                  Exit
+                </button>
+                
+                {/* End Session */}
+                <button 
+                  onClick={() => {
+                    navigate("/dashboard");
+                    setShowMoreMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-destructive/10 transition-colors text-sm text-destructive border-t border-border/30"
+                >
+                  <StopCircle className="w-4 h-4" />
+                  End Session
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Move Handle */}
           <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors cursor-grab">
