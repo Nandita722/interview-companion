@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import {
   Sparkles,
   Monitor,
-  MessageSquare,
   MoreVertical,
   Move,
   ChevronUp,
   X,
   Trash2,
-  Clock,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -47,43 +46,40 @@ export default function ActiveSessionPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className="w-[480px] glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in">
+      <div className="w-[520px] glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in">
         
-        {/* Top Action Bar - Main controls */}
-        <div className="flex items-center gap-1.5 px-2 py-2 bg-window-header/80 backdrop-blur-sm">
+        {/* Top Action Bar */}
+        <div className="flex items-center gap-2 px-3 py-2.5 bg-window-header/90 backdrop-blur-sm">
           {/* AI Answer Button */}
           <button
-            onClick={() => setActivePanel("ai")}
+            onClick={() => setActivePanel(activePanel === "ai" ? "transcript" : "ai")}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border",
+              "flex items-center gap-2 h-9 px-4 rounded-full text-sm font-medium transition-all border",
               activePanel === "ai"
-                ? "bg-primary/20 text-primary border-primary/40"
-                : "bg-muted/60 hover:bg-muted text-foreground border-border/50"
+                ? "bg-primary/20 text-primary border-primary/50"
+                : "bg-transparent hover:bg-muted/40 text-foreground border-border"
             )}
           >
-            <Sparkles className="w-4 h-4" />
             AI Answer
+            <Sparkles className="w-4 h-4" />
           </button>
 
           {/* Analyze Screen Button */}
           <button
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border",
-              "bg-muted/60 hover:bg-muted text-foreground border-border/50"
-            )}
+            className="flex items-center gap-2 h-9 px-4 rounded-full text-sm font-medium transition-all border bg-transparent hover:bg-muted/40 text-foreground border-border"
           >
-            <Monitor className="w-4 h-4" />
             Analyze Screen
+            <Monitor className="w-4 h-4" />
           </button>
 
           {/* Chat Button */}
           <button
-            onClick={() => setActivePanel("chat")}
+            onClick={() => setActivePanel(activePanel === "chat" ? "transcript" : "chat")}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border",
+              "flex items-center h-9 px-4 rounded-full text-sm font-medium transition-all border border-dashed",
               activePanel === "chat"
-                ? "bg-primary/20 text-primary border-primary/40"
-                : "bg-muted/60 hover:bg-muted text-foreground border-border/50"
+                ? "bg-primary/20 text-primary border-primary/50"
+                : "bg-transparent hover:bg-muted/40 text-foreground border-border"
             )}
           >
             Chat
@@ -93,55 +89,56 @@ export default function ActiveSessionPage() {
           <div className="flex-1" />
 
           {/* Timer */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/40 text-sm font-mono text-muted-foreground">
-            <Clock className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-muted/60 text-sm font-mono text-foreground">
+            <div className="w-4 h-4 rounded bg-foreground/80 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-sm bg-muted" />
+            </div>
             <span>{mockTime}</span>
           </div>
 
           {/* More Menu */}
-          <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+          <button className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors">
             <MoreVertical className="w-4 h-4" />
           </button>
 
           {/* Move Handle */}
-          <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-grab">
+          <button className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors cursor-grab">
             <Move className="w-4 h-4" />
           </button>
 
           {/* Collapse Button */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors"
           >
             <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
           </button>
         </div>
 
-        {/* Status Bar - Auto-scroll & Language */}
-        <div className="flex items-center justify-between px-3 py-2 bg-muted/20 border-y border-border/30">
+        {/* Status Bar */}
+        <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
           <div className="flex items-center gap-4">
             {/* Auto-scroll Toggle */}
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2.5 cursor-pointer">
               <button
                 type="button"
                 role="switch"
                 aria-checked={autoScroll}
                 onClick={() => setAutoScroll(!autoScroll)}
                 className={cn(
-                  "relative inline-flex h-5 w-9 flex-shrink-0 rounded-full transition-colors",
-                  "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
-                  autoScroll ? "bg-primary" : "bg-muted"
+                  "relative inline-flex h-5 w-10 flex-shrink-0 rounded-full transition-colors",
+                  autoScroll ? "bg-primary" : "bg-muted-foreground/30"
                 )}
               >
                 <span
                   className={cn(
                     "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform",
                     "absolute top-0.5",
-                    autoScroll ? "translate-x-4" : "translate-x-0.5"
+                    autoScroll ? "translate-x-5" : "translate-x-0.5"
                   )}
                 />
               </button>
-              <span className="text-sm text-foreground">Auto-scroll</span>
+              <span className="text-sm font-medium text-foreground">Auto-scroll</span>
             </label>
 
             {/* Language */}
@@ -149,10 +146,10 @@ export default function ActiveSessionPage() {
           </div>
 
           {/* Right side controls */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {/* Clear Button */}
             <button 
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Clear transcript"
             >
               <Trash2 className="w-4 h-4" />
@@ -161,7 +158,7 @@ export default function ActiveSessionPage() {
             {/* Collapse */}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
             </button>
@@ -169,7 +166,7 @@ export default function ActiveSessionPage() {
             {/* Close */}
             <button
               onClick={handleClose}
-              className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -181,14 +178,16 @@ export default function ActiveSessionPage() {
           <>
             {/* Transcript View */}
             {activePanel === "transcript" && (
-              <div className="p-4 max-h-[300px] overflow-y-auto custom-scrollbar">
-                {mockTranscript.length === 0 ? (
-                  <div className="flex items-center gap-2 py-8 justify-center">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    <span className="text-sm text-muted-foreground">Listening...</span>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
+              <div className="p-3">
+                {/* Listening Input Bar */}
+                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-muted/40 border border-border/50">
+                  <span className="text-sm text-muted-foreground">Listening...</span>
+                  <div className="flex-1" />
+                </div>
+
+                {/* Transcript Content */}
+                {mockTranscript.length > 0 && (
+                  <div className="mt-3 max-h-[250px] overflow-y-auto custom-scrollbar space-y-3">
                     {mockTranscript.map((item, idx) => (
                       <div key={idx} className="space-y-1">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -196,7 +195,7 @@ export default function ActiveSessionPage() {
                           <span>·</span>
                           <span>{item.time}</span>
                         </div>
-                        <p className="text-sm text-foreground leading-relaxed pl-0">
+                        <p className="text-sm text-foreground leading-relaxed">
                           {item.text}
                         </p>
                       </div>
@@ -211,7 +210,7 @@ export default function ActiveSessionPage() {
               <div className="p-4 max-h-[300px] overflow-y-auto custom-scrollbar animate-fade-in">
                 <div className="space-y-4">
                   {/* Detected Question */}
-                  <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                  <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
                     <div className="flex items-center gap-2 text-xs text-primary font-medium mb-2">
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>Detected Question</span>
@@ -268,14 +267,13 @@ export default function ActiveSessionPage() {
           </>
         )}
 
-        {/* Collapsed State - Just show Listening */}
+        {/* Collapsed State */}
         {!isExpanded && (
           <div 
             className="px-4 py-3 cursor-pointer hover:bg-muted/20 transition-colors"
             onClick={() => setIsExpanded(true)}
           >
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-success pulse-dot" />
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/40 border border-border/50">
               <span className="text-sm text-muted-foreground">Listening...</span>
             </div>
           </div>
