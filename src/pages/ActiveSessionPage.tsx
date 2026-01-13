@@ -246,7 +246,7 @@ export default function ActiveSessionPage() {
             
             {/* Dropdown Menu */}
             {showMoreMenu && (
-              <div className="fixed right-4 top-16 w-56 rounded-xl bg-popover border border-border shadow-xl z-50 overflow-hidden animate-fade-in">
+              <div className="fixed right-4 top-16 w-56 rounded-xl bg-popover border border-border shadow-xl z-[100] overflow-hidden animate-fade-in">
                 {/* User info */}
                 <div className="px-3 py-2 border-b border-border/50 text-xs text-muted-foreground">
                   More <span className="text-foreground">user@email.com</span>
