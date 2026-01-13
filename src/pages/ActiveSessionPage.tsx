@@ -482,10 +482,10 @@ export default function ActiveSessionPage() {
           </div>
         )}
 
-        {/* AI Answer Box - Separate floating panel */}
-        {showAIAnswer && (
+        {/* AI Answer & Analyze Screen Box - Combined panel */}
+        {(showAIAnswer || showAnalyzeScreen) && (
           <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
-            {/* AI Answer Header Bar */}
+            {/* Header Bar */}
             <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
               {/* Left side - Navigation arrows */}
               <div className="flex items-center gap-1.5">
@@ -506,7 +506,10 @@ export default function ActiveSessionPage() {
                   <Trash2 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setShowAIAnswer(false)}
+                  onClick={() => {
+                    setShowAIAnswer(false);
+                    setShowAnalyzeScreen(false);
+                  }}
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                 >
                   <X className="w-4 h-4" />
@@ -514,78 +517,72 @@ export default function ActiveSessionPage() {
               </div>
             </div>
 
-            {/* AI Answer Content */}
-            <div className="p-4 max-h-[340px] overflow-y-auto custom-scrollbar">
+            {/* Content */}
+            <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
-                {/* Question */}
-                <div className="flex items-start gap-2">
-                  <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center mt-0.5">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-foreground">Question: </span>
-                    <span className="text-sm text-foreground">{mockAIAnswer.question}</span>
-                  </div>
-                </div>
+                {/* AI Answer Content */}
+                {showAIAnswer && (
+                  <>
+                    {/* Question */}
+                    <div className="flex items-start gap-2">
+                      <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center mt-0.5">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Question: </span>
+                        <span className="text-sm text-foreground">{mockAIAnswer.question}</span>
+                      </div>
+                    </div>
 
-                {/* Answer */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    <span className="text-sm font-medium text-foreground">Answer:</span>
+                    {/* Answer */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm font-medium text-foreground">Answer:</span>
+                      </div>
+                      <ul className="space-y-1.5 pl-6">
+                        {mockAIAnswer.answer.map((point, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                            <span className="text-foreground mt-1.5">•</span>
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="pt-2 text-xs text-muted-foreground">
+                      AI Answer · 04:21 AM
+                    </div>
+                  </>
+                )}
+
+                {/* Analyze Screen Content */}
+                {showAnalyzeScreen && (
+                  <div className={cn(showAIAnswer && "border-t border-border/50 pt-4 mt-4")}>
+                    <div className="flex items-start gap-2">
+                      <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center mt-0.5">
+                        <Monitor className="w-2.5 h-2.5 text-blue-400" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Screen Analysis</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="flex flex-col items-center justify-center py-4 text-center">
+                        <Monitor className="w-8 h-8 text-muted-foreground/50 mb-2" />
+                        <span className="text-sm text-muted-foreground">Capture and analyze your screen content</span>
+                        <p className="text-xs text-muted-foreground/70 mt-1">
+                          Click "Analyze Screen" to capture
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 text-xs text-muted-foreground">
+                      Screen Analysis · Ready
+                    </div>
                   </div>
-                  <ul className="space-y-1.5 pl-6">
-                    {mockAIAnswer.answer.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
-                        <span className="text-foreground mt-1.5">•</span>
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="pt-2 text-xs text-muted-foreground">
-                  AI Answer · 04:21 AM
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Analyze Screen Box - Separate floating panel */}
-        {showAnalyzeScreen && (
-          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
-            {/* Header Bar */}
-            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
-              <div className="flex items-center gap-1.5">
-                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button 
-                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setShowAnalyzeScreen(false)}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <Monitor className="w-10 h-10 text-muted-foreground/50 mb-3" />
-                <span className="text-sm text-muted-foreground">Screen Analysis</span>
-                <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
-                  Capture and analyze your screen content
-                </p>
+                )}
               </div>
             </div>
           </div>
