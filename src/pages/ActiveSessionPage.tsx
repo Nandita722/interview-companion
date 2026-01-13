@@ -8,7 +8,8 @@ import {
   ChevronUp,
   X,
   Trash2,
-  MessageSquare,
+  Mic,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +17,14 @@ export default function ActiveSessionPage() {
   const navigate = useNavigate();
   const [autoScroll, setAutoScroll] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [activePanel, setActivePanel] = useState<"transcript" | "ai" | "chat">("transcript");
+  const [showAIAnswer, setShowAIAnswer] = useState(false);
+  const [showAnalyzeScreen, setShowAnalyzeScreen] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  
+  // Recording controls
+  const [transcribeEnabled, setTranscribeEnabled] = useState(true);
+  const [computerAudioEnabled, setComputerAudioEnabled] = useState(true);
+  const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
 
   const mockTime = "9:43";
   const mockTranscript = [
@@ -26,17 +34,16 @@ export default function ActiveSessionPage() {
     { time: "08:22 AM", speaker: "Client 1", text: "Response. Timeout." },
     { time: "08:22 AM", speaker: "Client 1", text: "Or. Long polling." },
     { time: "08:22 AM", speaker: "Client 1", text: "Long polling. I think." },
-    { time: "08:22 AM", speaker: "Client 1", text: "Timeout. That's it. Long polling. Example." },
-    { time: "08:22 AM", speaker: "Client 1", text: "Interviews," },
   ];
 
   const mockAIAnswer = {
-    question: "What is the difference between long polling and websockets?",
+    question: "What programming language do you know?",
     answer: [
-      "Long polling keeps connection open until server has data",
-      "WebSockets provide full-duplex communication",
-      "Long polling has higher latency than WebSockets",
-      "WebSockets are better for real-time applications",
+      "I know JavaScript.",
+      "I am comfortable using JavaScript for web development and scripting.",
+      "I can write code to create interactive web pages and handle client-side logic.",
+      "I am familiar with JavaScript basics like variables, functions, loops, and events.",
+      "I can also work with JavaScript frameworks and libraries if needed.",
     ],
   };
 
@@ -44,42 +51,165 @@ export default function ActiveSessionPage() {
     navigate("/dashboard");
   };
 
+  // If both audio sources are disabled, transcribe is also disabled
+  const isListening = transcribeEnabled && (computerAudioEnabled || microphoneEnabled);
+
+  // Handle transcribe toggle
+  const handleTranscribeToggle = () => {
+    if (!computerAudioEnabled && !microphoneEnabled) {
+      // Can't enable transcribe without audio source
+      return;
+    }
+    setTranscribeEnabled(!transcribeEnabled);
+  };
+
+  // When audio sources change, auto-disable transcribe if both are off
+  const handleComputerAudioToggle = () => {
+    const newValue = !computerAudioEnabled;
+    setComputerAudioEnabled(newValue);
+    if (!newValue && !microphoneEnabled) {
+      setTranscribeEnabled(false);
+    }
+  };
+
+  const handleMicrophoneToggle = () => {
+    const newValue = !microphoneEnabled;
+    setMicrophoneEnabled(newValue);
+    if (!newValue && !computerAudioEnabled) {
+      setTranscribeEnabled(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className="w-[520px] glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in">
+      <div className={cn(
+        "glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in",
+        showAIAnswer || showAnalyzeScreen || showChat ? "w-[900px]" : "w-[520px]"
+      )}>
         
         {/* Top Action Bar */}
-        <div className="flex items-center gap-2 px-3 py-2.5 bg-window-header/90 backdrop-blur-sm">
+        <div className="flex items-center gap-1.5 px-2.5 py-2 bg-window-header/90 backdrop-blur-sm">
+          {/* Transcribe Button */}
+          <button
+            onClick={handleTranscribeToggle}
+            className={cn(
+              "relative flex items-center justify-center w-9 h-9 rounded-lg transition-all",
+              transcribeEnabled && isListening
+                ? "bg-green-500/20"
+                : "bg-muted/60 hover:bg-muted"
+            )}
+            title="Transcribe"
+          >
+            {/* Audio wave icon */}
+            <div className="flex items-center gap-0.5 h-4">
+              <div className={cn(
+                "w-0.5 rounded-full transition-all",
+                transcribeEnabled && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
+              )} />
+              <div className={cn(
+                "w-0.5 rounded-full transition-all",
+                transcribeEnabled && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
+              )} style={{ animationDelay: "0.1s" }} />
+              <div className={cn(
+                "w-0.5 rounded-full transition-all",
+                transcribeEnabled && isListening ? "bg-green-400 h-3 animate-pulse" : "bg-muted-foreground h-2"
+              )} style={{ animationDelay: "0.2s" }} />
+              <div className={cn(
+                "w-0.5 rounded-full transition-all",
+                transcribeEnabled && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
+              )} style={{ animationDelay: "0.3s" }} />
+              <div className={cn(
+                "w-0.5 rounded-full transition-all",
+                transcribeEnabled && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
+              )} style={{ animationDelay: "0.4s" }} />
+            </div>
+          </button>
+
+          {/* Computer Audio Button */}
+          <button
+            onClick={handleComputerAudioToggle}
+            className={cn(
+              "flex items-center justify-center w-9 h-9 rounded-lg transition-all",
+              computerAudioEnabled
+                ? "bg-orange-500/20 text-orange-400"
+                : "bg-muted/60 text-muted-foreground hover:bg-muted"
+            )}
+            title="Computer audio capture"
+          >
+            <Monitor className="w-4 h-4" />
+          </button>
+
+          {/* Microphone Button */}
+          <button
+            onClick={handleMicrophoneToggle}
+            className={cn(
+              "flex items-center justify-center w-9 h-9 rounded-lg transition-all",
+              microphoneEnabled
+                ? "bg-yellow-500/20 text-yellow-400"
+                : "bg-muted/60 text-muted-foreground hover:bg-muted"
+            )}
+            title="Microphone capture"
+          >
+            <Mic className="w-4 h-4" />
+          </button>
+
+          {/* Separator */}
+          <div className="w-px h-6 bg-border/50 mx-1" />
+
           {/* AI Answer Button */}
           <button
-            onClick={() => setActivePanel(activePanel === "ai" ? "transcript" : "ai")}
+            onClick={() => {
+              setShowAIAnswer(!showAIAnswer);
+              if (!showAIAnswer) {
+                setShowAnalyzeScreen(false);
+                setShowChat(false);
+              }
+            }}
             className={cn(
-              "flex items-center gap-2 h-9 px-4 rounded-full text-sm font-medium transition-all border",
-              activePanel === "ai"
-                ? "bg-primary/20 text-primary border-primary/50"
-                : "bg-transparent hover:bg-muted/40 text-foreground border-border"
+              "flex items-center gap-1.5 h-8 px-3 rounded-full text-sm font-medium transition-all",
+              showAIAnswer
+                ? "bg-primary/20 text-primary"
+                : "bg-muted/60 hover:bg-muted text-foreground"
             )}
           >
             AI Answer
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3.5 h-3.5" />
           </button>
 
           {/* Analyze Screen Button */}
           <button
-            className="flex items-center gap-2 h-9 px-4 rounded-full text-sm font-medium transition-all border bg-transparent hover:bg-muted/40 text-foreground border-border"
+            onClick={() => {
+              setShowAnalyzeScreen(!showAnalyzeScreen);
+              if (!showAnalyzeScreen) {
+                setShowAIAnswer(false);
+                setShowChat(false);
+              }
+            }}
+            className={cn(
+              "flex items-center gap-1.5 h-8 px-3 rounded-full text-sm font-medium transition-all",
+              showAnalyzeScreen
+                ? "bg-primary/20 text-primary"
+                : "bg-muted/60 hover:bg-muted text-foreground"
+            )}
           >
             Analyze Screen
-            <Monitor className="w-4 h-4" />
+            <Monitor className="w-3.5 h-3.5" />
           </button>
 
           {/* Chat Button */}
           <button
-            onClick={() => setActivePanel(activePanel === "chat" ? "transcript" : "chat")}
+            onClick={() => {
+              setShowChat(!showChat);
+              if (!showChat) {
+                setShowAIAnswer(false);
+                setShowAnalyzeScreen(false);
+              }
+            }}
             className={cn(
-              "flex items-center h-9 px-4 rounded-full text-sm font-medium transition-all border border-dashed",
-              activePanel === "chat"
+              "flex items-center h-8 px-4 rounded-full text-sm font-medium transition-all border",
+              showChat
                 ? "bg-primary/20 text-primary border-primary/50"
-                : "bg-transparent hover:bg-muted/40 text-foreground border-border"
+                : "bg-muted/60 hover:bg-muted text-foreground border-transparent"
             )}
           >
             Chat
@@ -89,7 +219,7 @@ export default function ActiveSessionPage() {
           <div className="flex-1" />
 
           {/* Timer */}
-          <div className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-muted/60 text-sm font-mono text-foreground">
+          <div className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-muted/60 text-sm font-mono text-foreground">
             <div className="w-4 h-4 rounded bg-foreground/80 flex items-center justify-center">
               <div className="w-2 h-2 rounded-sm bg-muted" />
             </div>
@@ -97,26 +227,26 @@ export default function ActiveSessionPage() {
           </div>
 
           {/* More Menu */}
-          <button className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors">
+          <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors">
             <MoreVertical className="w-4 h-4" />
           </button>
 
           {/* Move Handle */}
-          <button className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors cursor-grab">
+          <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors cursor-grab">
             <Move className="w-4 h-4" />
           </button>
 
           {/* Collapse Button */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors"
           >
             <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
           </button>
         </div>
 
         {/* Status Bar */}
-        <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+        <div className="flex items-center justify-between px-3 py-2 bg-muted/30 border-t border-border/30">
           <div className="flex items-center gap-4">
             {/* Auto-scroll Toggle */}
             <label className="flex items-center gap-2.5 cursor-pointer">
@@ -175,96 +305,107 @@ export default function ActiveSessionPage() {
 
         {/* Main Content Area */}
         {isExpanded && (
-          <>
-            {/* Transcript View */}
-            {activePanel === "transcript" && (
-              <div className="p-3">
-                {/* Listening Input Bar */}
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-muted/40 border border-border/50">
-                  <span className="text-sm text-muted-foreground">Listening...</span>
-                  <div className="flex-1" />
-                </div>
-
-                {/* Transcript Content */}
-                {mockTranscript.length > 0 && (
-                  <div className="mt-3 max-h-[250px] overflow-y-auto custom-scrollbar space-y-3">
-                    {mockTranscript.map((item, idx) => (
-                      <div key={idx} className="space-y-1">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span className="font-medium text-foreground/70">{item.speaker}</span>
-                          <span>·</span>
-                          <span>{item.time}</span>
-                        </div>
-                        <p className="text-sm text-foreground leading-relaxed">
-                          {item.text}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+          <div className={cn(
+            "flex",
+            (showAIAnswer || showAnalyzeScreen || showChat) && "divide-x divide-border/30"
+          )}>
+            {/* Transcript Panel - Always visible */}
+            <div className={cn(
+              "p-3 flex-1 min-w-0",
+              (showAIAnswer || showAnalyzeScreen || showChat) ? "w-1/2" : "w-full"
+            )}>
+              {/* Listening Input Bar */}
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-muted/40 border border-border/50">
+                <span className={cn(
+                  "text-sm",
+                  isListening ? "text-muted-foreground" : "text-muted-foreground/50"
+                )}>
+                  {isListening ? "Listening..." : "Listening off"}
+                </span>
+                <div className="flex-1" />
               </div>
-            )}
 
-            {/* AI Answer View */}
-            {activePanel === "ai" && (
-              <div className="p-4 max-h-[300px] overflow-y-auto custom-scrollbar animate-fade-in">
-                <div className="space-y-4">
-                  {/* Detected Question */}
-                  <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
-                    <div className="flex items-center gap-2 text-xs text-primary font-medium mb-2">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Detected Question</span>
+              {/* Transcript Content */}
+              <div className="mt-3 max-h-[280px] overflow-y-auto custom-scrollbar space-y-3">
+                {mockTranscript.map((item, idx) => (
+                  <div key={idx} className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="font-medium text-foreground/70">{item.speaker}</span>
+                      <span>·</span>
+                      <span>{item.time}</span>
                     </div>
-                    <p className="text-sm text-foreground italic">
-                      "{mockAIAnswer.question}"
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {item.text}
                     </p>
                   </div>
+                ))}
+              </div>
+            </div>
 
-                  {/* Suggested Answer */}
+            {/* AI Answer Panel */}
+            {showAIAnswer && (
+              <div className="w-1/2 p-4 max-h-[340px] overflow-y-auto custom-scrollbar animate-fade-in">
+                <div className="space-y-4">
+                  {/* Question */}
                   <div className="space-y-2">
-                    <span className="text-sm font-medium text-foreground">Suggested Answer:</span>
-                    <ul className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                      </div>
+                      <span className="text-sm font-medium text-foreground">Question:</span>
+                      <span className="text-sm text-foreground">{mockAIAnswer.question}</span>
+                    </div>
+                  </div>
+
+                  {/* Answer */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      <span className="text-sm font-medium text-foreground">Answer:</span>
+                    </div>
+                    <ul className="space-y-1.5 pl-6">
                       {mockAIAnswer.answer.map((point, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground">
-                          <span className="text-primary font-bold mt-0.5">•</span>
+                        <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                          <span className="text-foreground mt-1.5">•</span>
                           <span>{point}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* Back to transcript */}
-                  <button
-                    onClick={() => setActivePanel("transcript")}
-                    className="w-full mt-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    ← Back to Transcript
-                  </button>
+                  <div className="pt-2 text-xs text-muted-foreground">
+                    AI Answer · 04:21 AM
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Chat View */}
-            {activePanel === "chat" && (
-              <div className="p-4 max-h-[300px] overflow-y-auto custom-scrollbar animate-fade-in">
+            {/* Analyze Screen Panel */}
+            {showAnalyzeScreen && (
+              <div className="w-1/2 p-4 max-h-[340px] overflow-y-auto custom-scrollbar animate-fade-in">
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <MessageSquare className="w-10 h-10 text-muted-foreground/50 mb-3" />
-                  <span className="text-sm text-muted-foreground">Chat with AI Assistant</span>
+                  <Monitor className="w-10 h-10 text-muted-foreground/50 mb-3" />
+                  <span className="text-sm text-muted-foreground">Screen Analysis</span>
                   <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
-                    Ask follow-up questions or get clarifications
+                    Capture and analyze your screen content
                   </p>
-                  
-                  {/* Back to transcript */}
-                  <button
-                    onClick={() => setActivePanel("transcript")}
-                    className="mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    ← Back to Transcript
-                  </button>
                 </div>
               </div>
             )}
-          </>
+
+            {/* Chat Panel */}
+            {showChat && (
+              <div className="w-1/2 p-4 max-h-[340px] overflow-y-auto custom-scrollbar animate-fade-in">
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <Sparkles className="w-10 h-10 text-muted-foreground/50 mb-3" />
+                  <span className="text-sm text-muted-foreground">Chat with AI</span>
+                  <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
+                    Ask follow-up questions or get clarifications
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Collapsed State */}
@@ -274,7 +415,12 @@ export default function ActiveSessionPage() {
             onClick={() => setIsExpanded(true)}
           >
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/40 border border-border/50">
-              <span className="text-sm text-muted-foreground">Listening...</span>
+              <span className={cn(
+                "text-sm",
+                isListening ? "text-muted-foreground" : "text-muted-foreground/50"
+              )}>
+                {isListening ? "Listening..." : "Listening off"}
+              </span>
             </div>
           </div>
         )}
