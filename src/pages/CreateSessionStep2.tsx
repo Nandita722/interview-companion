@@ -177,38 +177,31 @@ export default function CreateSessionStep2() {
                   <Info className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground cursor-help transition-colors" />
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[260px]">
-                  <p className="text-xs">GPT-4.1 Mini is faster and recommended for most interviews. GPT-4.1 is more powerful but slower.</p>
+                  <p className="text-xs">Select the AI model for generating interview responses. Faster models are recommended for real-time use.</p>
                 </TooltipContent>
               </Tooltip>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { id: "gpt-4-mini", name: "GPT-4.1 Mini", badges: ["Fast", "Recommended"] },
-                { id: "gpt-4", name: "GPT-4.1", badges: ["Powerful"] },
-              ].map((model) => (
-                <button
-                  key={model.id}
-                  onClick={() => setAiModel(model.id)}
-                  className={cn(
-                    "flex flex-col items-start p-3 rounded-lg border transition-all text-left",
-                    aiModel === model.id
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-muted-foreground/50"
-                  )}
-                >
-                  <span className="text-sm font-medium text-foreground">{model.name}</span>
-                  <div className="flex gap-1 mt-1">
-                    {model.badges.map((badge) => (
-                      <span
-                        key={badge}
-                        className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-muted text-muted-foreground"
-                      >
-                        {badge}
-                      </span>
-                    ))}
-                  </div>
-                </button>
-              ))}
+            <div className="relative">
+              <select
+                value={aiModel}
+                onChange={(e) => setAiModel(e.target.value)}
+                className="w-full px-3 py-2.5 pr-8 rounded-lg text-sm bg-input border border-border text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <optgroup label="Recommended">
+                  <option value="gpt-4-mini">GPT-4.1 Mini (Fast)</option>
+                  <option value="gemini-flash">Gemini 2.5 Flash (Balanced)</option>
+                </optgroup>
+                <optgroup label="Powerful">
+                  <option value="gpt-4">GPT-4.1 (Powerful)</option>
+                  <option value="gemini-pro">Gemini 2.5 Pro (Advanced)</option>
+                  <option value="claude-sonnet">Claude Sonnet (Intelligent)</option>
+                </optgroup>
+                <optgroup label="Budget">
+                  <option value="gpt-4-nano">GPT-4.1 Nano (Economy)</option>
+                  <option value="gemini-lite">Gemini 2.5 Flash Lite (Fast)</option>
+                </optgroup>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             </div>
           </div>
 
