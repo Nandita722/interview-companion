@@ -1,4 +1,5 @@
 export { FloatingWindow } from "./FloatingWindow";
+export { MinimizedIcon } from "./MinimizedIcon";
 export { WindowControls } from "./WindowControls";
 export { CreditsBadge } from "./CreditsBadge";
 export { TitleBar } from "./TitleBar";

@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Clock, AlertTriangle, ArrowLeft, Zap } from "lucide-react";
-import { FloatingWindow, TitleBar, ActionButton } from "@/components/floating";
+import { FloatingWindow, TitleBar, ActionButton, MinimizedIcon } from "@/components/floating";
 
 export default function FreeSessionActivation() {
   const navigate = useNavigate();
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const handleBack = () => {
     navigate("/create-session/step2");
@@ -13,9 +15,13 @@ export default function FreeSessionActivation() {
     navigate("/session");
   };
 
+  if (isMinimized) {
+    return <MinimizedIcon onRestore={() => setIsMinimized(false)} />;
+  }
+
   return (
     <FloatingWindow width="compact">
-      <TitleBar credits={0} />
+      <TitleBar credits={0} onMinimize={() => setIsMinimized(true)} />
 
       {/* Content */}
       <div className="flex flex-col items-center justify-center p-8 space-y-6">
