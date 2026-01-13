@@ -95,7 +95,7 @@ export default function ActiveSessionPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Top Action Bar - Full width, auto-fit content */}
-      <div className="w-full glass-strong backdrop-blur-sm border-b border-border/30">
+      <div className="relative z-[200] w-full glass-strong backdrop-blur-sm border-b border-border/30">
         <div className="flex items-center gap-1.5 px-2.5 py-2 w-fit mx-auto">
           {/* All buttons in one row, width auto-fits */}
           {/* Transcribe Button */}
@@ -246,7 +246,7 @@ export default function ActiveSessionPage() {
             
             {/* Dropdown Menu */}
             {showMoreMenu && (
-              <div className="fixed right-4 top-16 w-56 rounded-xl bg-popover border border-border shadow-xl z-[100] overflow-hidden animate-fade-in">
+              <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-popover border border-border shadow-xl z-[9999] overflow-hidden animate-fade-in">
                 {/* User info */}
                 <div className="px-3 py-2 border-b border-border/50 text-xs text-muted-foreground">
                   More <span className="text-foreground">user@email.com</span>
@@ -349,7 +349,7 @@ export default function ActiveSessionPage() {
       </div>
 
       {/* Main Content Area - Side by side boxes */}
-      <div className="flex-1 flex items-start justify-center gap-4 p-4">
+      <div className="relative z-0 flex-1 flex items-start justify-center gap-4 p-4">
         
         {/* Transcript Box - Separate floating panel */}
         {showTranscript && (
