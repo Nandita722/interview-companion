@@ -88,7 +88,7 @@ export default function ActiveSessionPage() {
             onClick={handleTranscribeToggle}
             className={cn(
               "relative flex items-center justify-center w-9 h-9 rounded-lg transition-all",
-              transcribeEnabled && isListening
+              showTranscript
                 ? "bg-green-500/20"
                 : "bg-muted/60 hover:bg-muted"
             )}
@@ -98,23 +98,23 @@ export default function ActiveSessionPage() {
             <div className="flex items-center gap-0.5 h-4">
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                showTranscript && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
+                showTranscript ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
               )} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                showTranscript && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
+                showTranscript ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
               )} style={{ animationDelay: "0.1s" }} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                showTranscript && isListening ? "bg-green-400 h-3 animate-pulse" : "bg-muted-foreground h-2"
+                showTranscript ? "bg-green-400 h-3 animate-pulse" : "bg-muted-foreground h-2"
               )} style={{ animationDelay: "0.2s" }} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                showTranscript && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
+                showTranscript ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
               )} style={{ animationDelay: "0.3s" }} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                showTranscript && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
+                showTranscript ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
               )} style={{ animationDelay: "0.4s" }} />
             </div>
           </button>
