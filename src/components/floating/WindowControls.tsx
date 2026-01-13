@@ -14,6 +14,14 @@ export function WindowControls({
   className,
   showGrip = true 
 }: WindowControlsProps) {
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      // Default: close the window (works in Electron)
+      window.close();
+    }
+  };
   return (
     <div className={cn("flex items-center gap-1", className)}>
       {showGrip && (
@@ -32,7 +40,7 @@ export function WindowControls({
         <Minus className="w-4 h-4" />
       </button>
       <button
-        onClick={onClose}
+        onClick={handleClose}
         className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
         title="Close"
       >
