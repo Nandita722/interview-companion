@@ -7,12 +7,14 @@ import {
   FormInput,
   FormTextarea,
   ActionButton,
+  MinimizedIcon,
 } from "@/components/floating";
 
 export default function CreateSessionStep1() {
   const navigate = useNavigate();
   const [company, setCompany] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const handleBack = () => {
     navigate("/dashboard");
@@ -24,9 +26,13 @@ export default function CreateSessionStep1() {
 
   const isValid = company.trim().length > 0;
 
+  if (isMinimized) {
+    return <MinimizedIcon onRestore={() => setIsMinimized(false)} />;
+  }
+
   return (
     <FloatingWindow width="medium">
-      <TitleBar credits={0} />
+      <TitleBar credits={0} onMinimize={() => setIsMinimized(true)} />
 
       {/* Header */}
       <div className="px-4 pt-4 pb-2">

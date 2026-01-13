@@ -13,6 +13,7 @@ import {
   FormTextarea,
   ToggleSwitch,
   ActionButton,
+  MinimizedIcon,
 } from "@/components/floating";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ export default function CreateSessionStep2() {
   const [aiModel, setAiModel] = useState("gpt-4-mini");
   const [autoGenerate, setAutoGenerate] = useState(true);
   const [saveTranscript, setSaveTranscript] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const credits = 0;
 
@@ -40,10 +42,14 @@ export default function CreateSessionStep2() {
     navigate("/session");
   };
 
+  if (isMinimized) {
+    return <MinimizedIcon onRestore={() => setIsMinimized(false)} />;
+  }
+
   return (
     <TooltipProvider delayDuration={200}>
       <FloatingWindow width="medium">
-        <TitleBar credits={credits} />
+        <TitleBar credits={credits} onMinimize={() => setIsMinimized(true)} />
 
         {/* Header */}
         <div className="px-4 pt-4 pb-2">

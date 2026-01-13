@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Sparkles,
@@ -22,7 +22,7 @@ import {
   StopCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { MinimizedIcon } from "@/components/floating";
 export default function ActiveSessionPage() {
   const navigate = useNavigate();
   const [autoScroll, setAutoScroll] = useState(true);
@@ -93,77 +93,9 @@ export default function ActiveSessionPage() {
     }
   };
 
-  // Draggable position state for minimized icon
-  const [iconPosition, setIconPosition] = useState({ x: (window.innerWidth - 56) / 2, y: 20 });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragOffset = useRef({ x: 0, y: 0 });
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    dragOffset.current = {
-      x: e.clientX - iconPosition.x,
-      y: e.clientY - iconPosition.y,
-    };
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      setIconPosition({
-        x: Math.max(0, Math.min(window.innerWidth - 56, e.clientX - dragOffset.current.x)),
-        y: Math.max(0, Math.min(window.innerHeight - 56, e.clientY - dragOffset.current.y)),
-      });
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDragging]);
-
   // If minimized, show only the floating icon
   if (isMinimized) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div 
-          className="fixed group z-[9999]"
-          style={{ left: iconPosition.x, top: iconPosition.y }}
-        >
-          {/* Minimized floating icon */}
-          <button
-            onMouseDown={handleMouseDown}
-            onClick={() => !isDragging && setIsMinimized(false)}
-            className={cn(
-              "flex items-center justify-center w-14 h-14 rounded-full bg-black border-2 border-green-500/50 shadow-lg shadow-green-500/20 hover:shadow-green-500/40 transition-all hover:scale-105",
-              isDragging ? "cursor-grabbing" : "cursor-grab"
-            )}
-          >
-            {/* Audio wave icon */}
-            <div className="flex items-center gap-0.5 h-6">
-              <div className="w-1 h-3 rounded-full bg-green-400 animate-pulse" />
-              <div className="w-1 h-5 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.1s" }} />
-              <div className="w-1 h-4 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.2s" }} />
-              <div className="w-1 h-5 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.3s" }} />
-              <div className="w-1 h-3 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.4s" }} />
-            </div>
-          </button>
-          
-          {/* Tooltip */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 rounded-lg bg-popover border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-sm pointer-events-none">
-            ParakeetAI (Ctrl + H)
-          </div>
-        </div>
-      </div>
-    );
+    return <MinimizedIcon onRestore={() => setIsMinimized(false)} />;
   }
 
   return (

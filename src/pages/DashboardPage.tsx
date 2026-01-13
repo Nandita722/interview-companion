@@ -9,12 +9,14 @@ import {
   ActionButton,
   SessionCard,
   UserMenu,
+  MinimizedIcon,
 } from "@/components/floating";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("create");
   const [sessionType, setSessionType] = useState<"free" | "paid">("free");
+  const [isMinimized, setIsMinimized] = useState(false);
   const credits = 0; // Mock: no credits
 
   const tabs = [
@@ -44,12 +46,16 @@ export default function DashboardPage() {
   const handleLogout = () => {
     navigate("/");
   };
+  if (isMinimized) {
+    return <MinimizedIcon onRestore={() => setIsMinimized(false)} />;
+  }
 
   return (
     <FloatingWindow width="medium">
       {/* Title Bar with User Menu */}
       <TitleBar
         credits={credits}
+        onMinimize={() => setIsMinimized(true)}
         rightContent={
           <UserMenu
             email="user@example.com"

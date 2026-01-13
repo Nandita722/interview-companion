@@ -1,13 +1,19 @@
+import { useState } from "react";
 import { Bird } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { FloatingWindow, ActionButton, WindowControls, CreditsBadge } from "@/components/floating";
+import { FloatingWindow, ActionButton, WindowControls, CreditsBadge, MinimizedIcon } from "@/components/floating";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const handleLogin = () => {
     navigate("/dashboard");
   };
+
+  if (isMinimized) {
+    return <MinimizedIcon onRestore={() => setIsMinimized(false)} />;
+  }
 
   return (
     <FloatingWindow width="compact">
@@ -20,7 +26,7 @@ export default function LoginPage() {
           <span className="font-semibold text-sm text-foreground">ParakeetAI</span>
         </div>
         <CreditsBadge credits={0} />
-        <WindowControls showGrip={true} />
+        <WindowControls showGrip={true} onMinimize={() => setIsMinimized(true)} />
       </div>
 
       {/* Content */}
