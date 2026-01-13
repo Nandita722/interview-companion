@@ -81,16 +81,11 @@ export default function ActiveSessionPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className={cn(
-        "glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in transition-all duration-300",
-        showAIAnswer || showAnalyzeScreen || showChat 
-          ? "w-full max-w-[95vw] lg:max-w-[900px]" 
-          : "w-full max-w-[95vw] sm:max-w-[520px]"
-      )}>
-        
-        {/* Top Action Bar */}
-        <div className="flex items-center gap-1.5 px-2.5 py-2 bg-window-header/90 backdrop-blur-sm">
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Top Action Bar - Full width, auto-fit content */}
+      <div className="w-full glass-strong backdrop-blur-sm border-b border-border/30">
+        <div className="flex items-center gap-1.5 px-2.5 py-2 w-fit mx-auto">
+          {/* All buttons in one row, width auto-fits */}
           {/* Transcribe Button */}
           <button
             onClick={handleTranscribeToggle}
@@ -246,7 +241,17 @@ export default function ActiveSessionPage() {
             <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
           </button>
         </div>
+      </div>
 
+      {/* Main Content Container */}
+      <div className="flex-1 flex items-start justify-center p-4">
+        <div className={cn(
+          "glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in transition-all duration-300",
+          showAIAnswer || showAnalyzeScreen || showChat 
+            ? "w-full max-w-[95vw] lg:max-w-[900px]" 
+            : "w-full max-w-[95vw] sm:max-w-[520px]"
+        )}>
+        
         {/* Status Bar */}
         <div className="flex items-center justify-between px-3 py-2 bg-muted/30 border-t border-border/30">
           <div className="flex items-center gap-4">
@@ -426,6 +431,7 @@ export default function ActiveSessionPage() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
