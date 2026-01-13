@@ -298,9 +298,9 @@ export default function ActiveSessionPage() {
               <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
             </button>
 
-            {/* Close */}
+            {/* Close - hides transcript box only */}
             <button
-              onClick={handleClose}
+              onClick={() => setShowTranscript(false)}
               className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
               <X className="w-4 h-4" />
