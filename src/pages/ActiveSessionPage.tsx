@@ -27,6 +27,7 @@ export default function ActiveSessionPage() {
   const navigate = useNavigate();
   const [autoScroll, setAutoScroll] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [showTranscript, setShowTranscript] = useState(true);
   const [showAIAnswer, setShowAIAnswer] = useState(false);
   const [showAnalyzeScreen, setShowAnalyzeScreen] = useState(false);
@@ -91,6 +92,35 @@ export default function ActiveSessionPage() {
       setTranscribeEnabled(false);
     }
   };
+
+  // If minimized, show only the floating icon
+  if (isMinimized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="relative group">
+          {/* Minimized floating icon */}
+          <button
+            onClick={() => setIsMinimized(false)}
+            className="flex items-center justify-center w-14 h-14 rounded-full bg-black border-2 border-green-500/50 shadow-lg shadow-green-500/20 hover:shadow-green-500/40 transition-all hover:scale-105"
+          >
+            {/* Audio wave icon */}
+            <div className="flex items-center gap-0.5 h-6">
+              <div className="w-1 h-3 rounded-full bg-green-400 animate-pulse" />
+              <div className="w-1 h-5 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.1s" }} />
+              <div className="w-1 h-4 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.2s" }} />
+              <div className="w-1 h-5 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.3s" }} />
+              <div className="w-1 h-3 rounded-full bg-green-400 animate-pulse" style={{ animationDelay: "0.4s" }} />
+            </div>
+          </button>
+          
+          {/* Tooltip */}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 rounded-lg bg-popover border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-sm">
+            ParakeetAI (Ctrl + H)
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -338,12 +368,13 @@ export default function ActiveSessionPage() {
             <Move className="w-4 h-4" />
           </button>
 
-          {/* Collapse Button */}
+          {/* Minimize Button - minimizes entire app to floating icon */}
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => setIsMinimized(true)}
             className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-foreground hover:bg-muted transition-colors"
+            title="Minimize (Ctrl + H)"
           >
-            <ChevronUp className={cn("w-4 h-4 transition-transform", !isExpanded && "rotate-180")} />
+            <ChevronUp className="w-4 h-4" />
           </button>
         </div>
       </div>
