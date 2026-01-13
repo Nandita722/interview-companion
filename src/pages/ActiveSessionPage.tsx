@@ -17,6 +17,7 @@ export default function ActiveSessionPage() {
   const navigate = useNavigate();
   const [autoScroll, setAutoScroll] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showTranscript, setShowTranscript] = useState(true);
   const [showAIAnswer, setShowAIAnswer] = useState(false);
   const [showAnalyzeScreen, setShowAnalyzeScreen] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -54,13 +55,9 @@ export default function ActiveSessionPage() {
   // If both audio sources are disabled, transcribe is also disabled
   const isListening = transcribeEnabled && (computerAudioEnabled || microphoneEnabled);
 
-  // Handle transcribe toggle
+  // Handle transcribe toggle - show/hide the transcript panel
   const handleTranscribeToggle = () => {
-    if (!computerAudioEnabled && !microphoneEnabled) {
-      // Can't enable transcribe without audio source
-      return;
-    }
-    setTranscribeEnabled(!transcribeEnabled);
+    setShowTranscript(!showTranscript);
   };
 
   // When audio sources change, auto-disable transcribe if both are off
@@ -95,29 +92,29 @@ export default function ActiveSessionPage() {
                 ? "bg-green-500/20"
                 : "bg-muted/60 hover:bg-muted"
             )}
-            title="Transcribe"
+            title="Toggle Transcript"
           >
             {/* Audio wave icon */}
             <div className="flex items-center gap-0.5 h-4">
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                transcribeEnabled && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
+                showTranscript && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
               )} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                transcribeEnabled && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
+                showTranscript && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
               )} style={{ animationDelay: "0.1s" }} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                transcribeEnabled && isListening ? "bg-green-400 h-3 animate-pulse" : "bg-muted-foreground h-2"
+                showTranscript && isListening ? "bg-green-400 h-3 animate-pulse" : "bg-muted-foreground h-2"
               )} style={{ animationDelay: "0.2s" }} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                transcribeEnabled && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
+                showTranscript && isListening ? "bg-green-400 h-4 animate-pulse" : "bg-muted-foreground h-3"
               )} style={{ animationDelay: "0.3s" }} />
               <div className={cn(
                 "w-0.5 rounded-full transition-all",
-                transcribeEnabled && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
+                showTranscript && isListening ? "bg-green-400 h-2 animate-pulse" : "bg-muted-foreground h-2"
               )} style={{ animationDelay: "0.4s" }} />
             </div>
           </button>
@@ -243,7 +240,8 @@ export default function ActiveSessionPage() {
         </div>
       </div>
 
-      {/* Main Content Container */}
+      {/* Main Content Container - Only show if transcript or any panel is visible */}
+      {(showTranscript || showAIAnswer || showAnalyzeScreen || showChat) && (
       <div className="flex-1 flex items-start justify-center p-4">
         <div className={cn(
           "glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in transition-all duration-300",
@@ -316,7 +314,8 @@ export default function ActiveSessionPage() {
             "flex",
             (showAIAnswer || showAnalyzeScreen || showChat) && "divide-x divide-border/30"
           )}>
-            {/* Transcript Panel - Always visible */}
+            {/* Transcript Panel - Visible when showTranscript is true */}
+            {showTranscript && (
             <div className={cn(
               "p-3 flex-1 min-w-0",
               (showAIAnswer || showAnalyzeScreen || showChat) ? "w-1/2" : "w-full"
@@ -348,6 +347,7 @@ export default function ActiveSessionPage() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* AI Answer Panel */}
             {showAIAnswer && (
@@ -433,6 +433,7 @@ export default function ActiveSessionPage() {
         )}
         </div>
       </div>
+      )}
     </div>
   );
 }
