@@ -52,8 +52,8 @@ export default function ActiveSessionPage() {
     navigate("/dashboard");
   };
 
-  // If both audio sources are disabled, transcribe is also disabled
-  const isListening = transcribeEnabled && (computerAudioEnabled || microphoneEnabled);
+  // Listening is active only when at least one audio source is enabled
+  const isListening = computerAudioEnabled || microphoneEnabled;
 
   // Handle transcribe toggle - show/hide the transcript panel
   const handleTranscribeToggle = () => {
