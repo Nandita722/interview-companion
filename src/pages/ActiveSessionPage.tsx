@@ -30,6 +30,8 @@ import {
   Globe,
   LogOut,
   StopCircle,
+  Send,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MinimizedIcon } from "@/components/floating";
@@ -53,6 +55,11 @@ export default function ActiveSessionPage() {
   const [autoGenerate, setAutoGenerate] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
+  
+  // Chat input
+  const [showChatInput, setShowChatInput] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatResponse, setChatResponse] = useState<{ question: string; answer: string } | null>(null);
 
   const mockTime = "9:43";
   const mockTranscript = [
@@ -231,15 +238,11 @@ export default function ActiveSessionPage() {
           {/* Chat Button */}
           <button
             onClick={() => {
-              setShowChat(!showChat);
-              if (!showChat) {
-                setShowAIAnswer(false);
-                setShowAnalyzeScreen(false);
-              }
+              setShowChatInput(!showChatInput);
             }}
             className={cn(
               "flex items-center h-8 px-4 rounded-full text-sm font-medium transition-all border",
-              showChat
+              showChatInput
                 ? "bg-primary/20 text-primary border-primary/50"
                 : "bg-muted/60 hover:bg-muted text-foreground border-transparent"
             )}
@@ -482,8 +485,8 @@ export default function ActiveSessionPage() {
           </div>
         )}
 
-        {/* AI Answer & Analyze Screen Box - Combined panel */}
-        {(showAIAnswer || showAnalyzeScreen) && (
+        {/* AI Answer, Analyze Screen & Chat Response Box - Combined panel */}
+        {(showAIAnswer || showAnalyzeScreen || showChat) && (
           <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
             {/* Header Bar */}
             <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
@@ -509,6 +512,8 @@ export default function ActiveSessionPage() {
                   onClick={() => {
                     setShowAIAnswer(false);
                     setShowAnalyzeScreen(false);
+                    setShowChat(false);
+                    setChatResponse(null);
                   }}
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                 >
@@ -521,7 +526,7 @@ export default function ActiveSessionPage() {
             <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
                 {/* AI Answer Content */}
-                {showAIAnswer && (
+                {showAIAnswer && !chatResponse && (
                   <>
                     {/* Question */}
                     <div className="flex items-start gap-2">
@@ -556,9 +561,40 @@ export default function ActiveSessionPage() {
                   </>
                 )}
 
+                {/* Chat Response Content */}
+                {chatResponse && (
+                  <>
+                    {/* Question from chat */}
+                    <div className="flex items-start gap-2">
+                      <div className="w-4 h-4 rounded-full bg-green-500/20 flex items-center justify-center mt-0.5">
+                        <MessageSquare className="w-2.5 h-2.5 text-green-400" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Question: </span>
+                        <span className="text-sm text-foreground">{chatResponse.question}</span>
+                      </div>
+                    </div>
+
+                    {/* Answer from chat */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm font-medium text-foreground">Answer:</span>
+                      </div>
+                      <p className="text-sm text-foreground pl-6 leading-relaxed">
+                        {chatResponse.answer}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 text-xs text-muted-foreground">
+                      Chat Response · Just now
+                    </div>
+                  </>
+                )}
+
                 {/* Analyze Screen Content */}
                 {showAnalyzeScreen && (
-                  <div className={cn(showAIAnswer && "border-t border-border/50 pt-4 mt-4")}>
+                  <div className={cn((showAIAnswer || chatResponse) && "border-t border-border/50 pt-4 mt-4")}>
                     <div className="flex items-start gap-2">
                       <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center mt-0.5">
                         <Monitor className="w-2.5 h-2.5 text-blue-400" />
@@ -588,41 +624,59 @@ export default function ActiveSessionPage() {
           </div>
         )}
 
-        {/* Chat Box - Separate floating panel */}
-        {showChat && (
-          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
-            {/* Header Bar */}
-            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
-              <div className="flex items-center gap-1.5">
-                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button 
-                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setShowChat(false)}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <Sparkles className="w-10 h-10 text-muted-foreground/50 mb-3" />
-                <span className="text-sm text-muted-foreground">Chat with AI</span>
-                <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px]">
-                  Ask follow-up questions or get clarifications
-                </p>
-              </div>
+        {/* Chat Input Box - Floating input at top when chat is active */}
+        {showChatInput && (
+          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[500px]">
+            <div className="flex items-center gap-2 p-3">
+              <input
+                type="text"
+                placeholder="Enter a message"
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && chatMessage.trim()) {
+                    // Simulate sending message and getting response
+                    setChatResponse({
+                      question: chatMessage,
+                      answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
+                    });
+                    setChatMessage("");
+                    setShowChatInput(false);
+                    setShowAIAnswer(true);
+                    setShowChat(true); // Mark that we have a chat response
+                  }
+                }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+              />
+              <button
+                onClick={() => {
+                  if (chatMessage.trim()) {
+                    setChatResponse({
+                      question: chatMessage,
+                      answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
+                    });
+                    setChatMessage("");
+                    setShowChatInput(false);
+                    setShowAIAnswer(true);
+                    setShowChat(true);
+                  }
+                }}
+                disabled={!chatMessage.trim()}
+                className={cn(
+                  "flex items-center justify-center w-10 h-10 rounded-xl transition-all",
+                  chatMessage.trim() 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-muted/60 text-muted-foreground"
+                )}
+              >
+                <Send className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setShowChatInput(false)}
+                className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
         )}
