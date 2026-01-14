@@ -59,11 +59,34 @@ export default function ActiveSessionPage() {
   // Chat input
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
-  const [chatResponse, setChatResponse] = useState<{ question: string; answer: string } | null>(null);
   
-  // Output panel navigation - tracks which view to show in the combined panel
-  // Types: 'ai' | 'chat' | 'screen'
-  const [currentOutputView, setCurrentOutputView] = useState<'ai' | 'chat' | 'screen'>('ai');
+  // Output history - stores all AI answers, chat responses, screen analyses
+  type OutputItem = {
+    type: 'ai' | 'chat' | 'screen';
+    question?: string;
+    answer?: string | string[];
+    timestamp: string;
+  };
+  const [outputHistory, setOutputHistory] = useState<OutputItem[]>([]);
+  const [currentOutputIndex, setCurrentOutputIndex] = useState(0);
+
+  // Helper to add new output to history
+  const addToHistory = (item: OutputItem) => {
+    setOutputHistory(prev => [...prev, item]);
+    setCurrentOutputIndex(outputHistory.length); // Point to the new item
+  };
+
+  // Navigate history
+  const navigateHistory = (direction: 'left' | 'right') => {
+    if (outputHistory.length === 0) return;
+    if (direction === 'left') {
+      setCurrentOutputIndex(prev => prev > 0 ? prev - 1 : outputHistory.length - 1);
+    } else {
+      setCurrentOutputIndex(prev => prev < outputHistory.length - 1 ? prev + 1 : 0);
+    }
+  };
+
+  const currentOutput = outputHistory[currentOutputIndex];
 
   const mockTime = "9:43";
   const mockTranscript = [
@@ -205,7 +228,13 @@ export default function ActiveSessionPage() {
               const newState = !showAIAnswer;
               setShowAIAnswer(newState);
               if (newState) {
-                setCurrentOutputView('ai');
+                // Add AI answer to history
+                addToHistory({
+                  type: 'ai',
+                  question: mockAIAnswer.question,
+                  answer: mockAIAnswer.answer,
+                  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
               }
             }}
             className={cn(
@@ -225,7 +254,13 @@ export default function ActiveSessionPage() {
               const newState = !showAnalyzeScreen;
               setShowAnalyzeScreen(newState);
               if (newState) {
-                setCurrentOutputView('screen');
+                // Add screen analysis to history
+                addToHistory({
+                  type: 'screen',
+                  question: 'Screen Analysis',
+                  answer: 'Capture and analyze your screen content',
+                  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
               }
             }}
             className={cn(
@@ -393,14 +428,15 @@ export default function ActiveSessionPage() {
               onChange={(e) => setChatMessage(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && chatMessage.trim()) {
-                  setChatResponse({
+                  addToHistory({
+                    type: 'chat',
                     question: chatMessage,
-                    answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
+                    answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message.",
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                   });
                   setChatMessage("");
                   setShowChatInput(false);
                   setShowChat(true);
-                  setCurrentOutputView('chat');
                 }
               }}
               className="w-64 h-8 px-4 rounded-full bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring text-sm"
@@ -409,14 +445,15 @@ export default function ActiveSessionPage() {
             <button
               onClick={() => {
                 if (chatMessage.trim()) {
-                  setChatResponse({
+                  addToHistory({
+                    type: 'chat',
                     question: chatMessage,
-                    answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
+                    answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message.",
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                   });
                   setChatMessage("");
                   setShowChatInput(false);
                   setShowChat(true);
-                  setCurrentOutputView('chat');
                 }
               }}
               disabled={!chatMessage.trim()}
@@ -543,44 +580,27 @@ export default function ActiveSessionPage() {
           </div>
         )}
 
-        {/* AI Answer, Analyze Screen & Chat Response Box - Combined panel with navigation */}
-        {(showAIAnswer || showAnalyzeScreen || showChat) && (
+        {/* Output History Panel - Shows all AI answers, chat responses, screen analyses */}
+        {outputHistory.length > 0 && (
           <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
             {/* Header Bar */}
             <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
               {/* Left side - Navigation arrows */}
               <div className="flex items-center gap-1.5">
                 <button 
-                  onClick={() => {
-                    const views: Array<'ai' | 'chat' | 'screen'> = [];
-                    if (showAIAnswer && !chatResponse) views.push('ai');
-                    if (chatResponse) views.push('chat');
-                    if (showAnalyzeScreen) views.push('screen');
-                    const currentIdx = views.indexOf(currentOutputView);
-                    if (currentIdx > 0) {
-                      setCurrentOutputView(views[currentIdx - 1]);
-                    } else if (views.length > 0) {
-                      setCurrentOutputView(views[views.length - 1]);
-                    }
-                  }}
+                  onClick={() => navigateHistory('left')}
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  disabled={outputHistory.length <= 1}
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
+                <span className="text-xs text-muted-foreground px-2">
+                  {currentOutputIndex + 1} / {outputHistory.length}
+                </span>
                 <button 
-                  onClick={() => {
-                    const views: Array<'ai' | 'chat' | 'screen'> = [];
-                    if (showAIAnswer && !chatResponse) views.push('ai');
-                    if (chatResponse) views.push('chat');
-                    if (showAnalyzeScreen) views.push('screen');
-                    const currentIdx = views.indexOf(currentOutputView);
-                    if (currentIdx < views.length - 1) {
-                      setCurrentOutputView(views[currentIdx + 1]);
-                    } else if (views.length > 0) {
-                      setCurrentOutputView(views[0]);
-                    }
-                  }}
+                  onClick={() => navigateHistory('right')}
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  disabled={outputHistory.length <= 1}
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -591,15 +611,23 @@ export default function ActiveSessionPage() {
                 <button 
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   title="Delete answer"
+                  onClick={() => {
+                    const newHistory = outputHistory.filter((_, i) => i !== currentOutputIndex);
+                    setOutputHistory(newHistory);
+                    if (currentOutputIndex >= newHistory.length && newHistory.length > 0) {
+                      setCurrentOutputIndex(newHistory.length - 1);
+                    }
+                  }}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => {
+                    setOutputHistory([]);
+                    setCurrentOutputIndex(0);
                     setShowAIAnswer(false);
                     setShowAnalyzeScreen(false);
                     setShowChat(false);
-                    setChatResponse(null);
                   }}
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                 >
@@ -608,11 +636,10 @@ export default function ActiveSessionPage() {
               </div>
             </div>
 
-            {/* Content - Show only the current view */}
+            {/* Content - Show current output from history */}
             <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
-                {/* AI Answer Content */}
-                {currentOutputView === 'ai' && showAIAnswer && !chatResponse && (
+                {currentOutput && currentOutput.type === 'ai' && (
                   <>
                     {/* Question */}
                     <div className="flex items-start gap-2">
@@ -621,7 +648,7 @@ export default function ActiveSessionPage() {
                       </div>
                       <div>
                         <span className="text-sm font-medium text-foreground">Question: </span>
-                        <span className="text-sm text-foreground">{mockAIAnswer.question}</span>
+                        <span className="text-sm text-foreground">{currentOutput.question}</span>
                       </div>
                     </div>
 
@@ -632,23 +659,27 @@ export default function ActiveSessionPage() {
                         <span className="text-sm font-medium text-foreground">Answer:</span>
                       </div>
                       <ul className="space-y-1.5 pl-6">
-                        {mockAIAnswer.answer.map((point, idx) => (
+                        {Array.isArray(currentOutput.answer) ? currentOutput.answer.map((point, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
                             <span className="text-foreground mt-1.5">•</span>
                             <span>{point}</span>
                           </li>
-                        ))}
+                        )) : (
+                          <li className="flex items-start gap-2 text-sm text-foreground">
+                            <span className="text-foreground mt-1.5">•</span>
+                            <span>{currentOutput.answer}</span>
+                          </li>
+                        )}
                       </ul>
                     </div>
 
                     <div className="pt-2 text-xs text-muted-foreground">
-                      AI Answer · 04:21 AM
+                      AI Answer · {currentOutput.timestamp}
                     </div>
                   </>
                 )}
 
-                {/* Chat Response Content */}
-                {currentOutputView === 'chat' && chatResponse && (
+                {currentOutput && currentOutput.type === 'chat' && (
                   <>
                     {/* Question from chat */}
                     <div className="flex items-start gap-2">
@@ -657,7 +688,7 @@ export default function ActiveSessionPage() {
                       </div>
                       <div>
                         <span className="text-sm font-medium text-foreground">Question: </span>
-                        <span className="text-sm text-foreground">{chatResponse.question}</span>
+                        <span className="text-sm text-foreground">{currentOutput.question}</span>
                       </div>
                     </div>
 
@@ -668,18 +699,17 @@ export default function ActiveSessionPage() {
                         <span className="text-sm font-medium text-foreground">Answer:</span>
                       </div>
                       <p className="text-sm text-foreground pl-6 leading-relaxed">
-                        {chatResponse.answer}
+                        {Array.isArray(currentOutput.answer) ? currentOutput.answer.join(' ') : currentOutput.answer}
                       </p>
                     </div>
 
                     <div className="pt-2 text-xs text-muted-foreground">
-                      Chat Response · Just now
+                      Chat Response · {currentOutput.timestamp}
                     </div>
                   </>
                 )}
 
-                {/* Analyze Screen Content */}
-                {currentOutputView === 'screen' && showAnalyzeScreen && (
+                {currentOutput && currentOutput.type === 'screen' && (
                   <>
                     <div className="flex items-start gap-2">
                       <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center mt-0.5">
@@ -701,7 +731,7 @@ export default function ActiveSessionPage() {
                     </div>
 
                     <div className="pt-2 text-xs text-muted-foreground">
-                      Screen Analysis · Ready
+                      Screen Analysis · {currentOutput.timestamp}
                     </div>
                   </>
                 )}
