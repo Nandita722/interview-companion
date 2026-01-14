@@ -60,6 +60,10 @@ export default function ActiveSessionPage() {
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [chatResponse, setChatResponse] = useState<{ question: string; answer: string } | null>(null);
+  
+  // Output panel navigation - tracks which view to show in the combined panel
+  // Types: 'ai' | 'chat' | 'screen'
+  const [currentOutputView, setCurrentOutputView] = useState<'ai' | 'chat' | 'screen'>('ai');
 
   const mockTime = "9:43";
   const mockTranscript = [
@@ -198,10 +202,10 @@ export default function ActiveSessionPage() {
           {/* AI Answer Button */}
           <button
             onClick={() => {
-              setShowAIAnswer(!showAIAnswer);
-              if (!showAIAnswer) {
-                setShowAnalyzeScreen(false);
-                setShowChat(false);
+              const newState = !showAIAnswer;
+              setShowAIAnswer(newState);
+              if (newState) {
+                setCurrentOutputView('ai');
               }
             }}
             className={cn(
@@ -218,10 +222,10 @@ export default function ActiveSessionPage() {
           {/* Analyze Screen Button */}
           <button
             onClick={() => {
-              setShowAnalyzeScreen(!showAnalyzeScreen);
-              if (!showAnalyzeScreen) {
-                setShowAIAnswer(false);
-                setShowChat(false);
+              const newState = !showAnalyzeScreen;
+              setShowAnalyzeScreen(newState);
+              if (newState) {
+                setCurrentOutputView('screen');
               }
             }}
             className={cn(
@@ -395,8 +399,8 @@ export default function ActiveSessionPage() {
                   });
                   setChatMessage("");
                   setShowChatInput(false);
-                  setShowAIAnswer(true);
                   setShowChat(true);
+                  setCurrentOutputView('chat');
                 }
               }}
               className="w-64 h-8 px-4 rounded-full bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring text-sm"
@@ -411,8 +415,8 @@ export default function ActiveSessionPage() {
                   });
                   setChatMessage("");
                   setShowChatInput(false);
-                  setShowAIAnswer(true);
                   setShowChat(true);
+                  setCurrentOutputView('chat');
                 }
               }}
               disabled={!chatMessage.trim()}
@@ -539,17 +543,45 @@ export default function ActiveSessionPage() {
           </div>
         )}
 
-        {/* AI Answer, Analyze Screen & Chat Response Box - Combined panel */}
+        {/* AI Answer, Analyze Screen & Chat Response Box - Combined panel with navigation */}
         {(showAIAnswer || showAnalyzeScreen || showChat) && (
           <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[450px]">
             {/* Header Bar */}
             <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
               {/* Left side - Navigation arrows */}
               <div className="flex items-center gap-1.5">
-                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <button 
+                  onClick={() => {
+                    const views: Array<'ai' | 'chat' | 'screen'> = [];
+                    if (showAIAnswer && !chatResponse) views.push('ai');
+                    if (chatResponse) views.push('chat');
+                    if (showAnalyzeScreen) views.push('screen');
+                    const currentIdx = views.indexOf(currentOutputView);
+                    if (currentIdx > 0) {
+                      setCurrentOutputView(views[currentIdx - 1]);
+                    } else if (views.length > 0) {
+                      setCurrentOutputView(views[views.length - 1]);
+                    }
+                  }}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <button 
+                  onClick={() => {
+                    const views: Array<'ai' | 'chat' | 'screen'> = [];
+                    if (showAIAnswer && !chatResponse) views.push('ai');
+                    if (chatResponse) views.push('chat');
+                    if (showAnalyzeScreen) views.push('screen');
+                    const currentIdx = views.indexOf(currentOutputView);
+                    if (currentIdx < views.length - 1) {
+                      setCurrentOutputView(views[currentIdx + 1]);
+                    } else if (views.length > 0) {
+                      setCurrentOutputView(views[0]);
+                    }
+                  }}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -576,11 +608,11 @@ export default function ActiveSessionPage() {
               </div>
             </div>
 
-            {/* Content */}
+            {/* Content - Show only the current view */}
             <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
                 {/* AI Answer Content */}
-                {showAIAnswer && !chatResponse && (
+                {currentOutputView === 'ai' && showAIAnswer && !chatResponse && (
                   <>
                     {/* Question */}
                     <div className="flex items-start gap-2">
@@ -616,7 +648,7 @@ export default function ActiveSessionPage() {
                 )}
 
                 {/* Chat Response Content */}
-                {chatResponse && (
+                {currentOutputView === 'chat' && chatResponse && (
                   <>
                     {/* Question from chat */}
                     <div className="flex items-start gap-2">
@@ -647,8 +679,8 @@ export default function ActiveSessionPage() {
                 )}
 
                 {/* Analyze Screen Content */}
-                {showAnalyzeScreen && (
-                  <div className={cn((showAIAnswer || chatResponse) && "border-t border-border/50 pt-4 mt-4")}>
+                {currentOutputView === 'screen' && showAnalyzeScreen && (
+                  <>
                     <div className="flex items-start gap-2">
                       <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center mt-0.5">
                         <Monitor className="w-2.5 h-2.5 text-blue-400" />
@@ -671,7 +703,7 @@ export default function ActiveSessionPage() {
                     <div className="pt-2 text-xs text-muted-foreground">
                       Screen Analysis · Ready
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
