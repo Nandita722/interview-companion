@@ -235,20 +235,70 @@ export default function ActiveSessionPage() {
             <Monitor className="w-3.5 h-3.5" />
           </button>
 
-          {/* Chat Button */}
-          <button
-            onClick={() => {
-              setShowChatInput(!showChatInput);
-            }}
-            className={cn(
-              "flex items-center h-8 px-4 rounded-full text-sm font-medium transition-all border",
-              showChatInput
-                ? "bg-primary/20 text-primary border-primary/50"
-                : "bg-muted/60 hover:bg-muted text-foreground border-transparent"
-            )}
-          >
-            Chat
-          </button>
+          {/* Chat Button / Chat Input */}
+          {!showChatInput ? (
+            <button
+              onClick={() => setShowChatInput(true)}
+              className="flex items-center h-8 px-4 rounded-full text-sm font-medium transition-all border bg-muted/60 hover:bg-muted text-foreground border-transparent"
+            >
+              Chat
+            </button>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <input
+                type="text"
+                placeholder="Enter a message"
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && chatMessage.trim()) {
+                    setChatResponse({
+                      question: chatMessage,
+                      answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
+                    });
+                    setChatMessage("");
+                    setShowChatInput(false);
+                    setShowAIAnswer(true);
+                    setShowChat(true);
+                  }
+                }}
+                className="w-48 h-8 px-3 rounded-full bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring text-sm"
+                autoFocus
+              />
+              <button
+                onClick={() => {
+                  if (chatMessage.trim()) {
+                    setChatResponse({
+                      question: chatMessage,
+                      answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
+                    });
+                    setChatMessage("");
+                    setShowChatInput(false);
+                    setShowAIAnswer(true);
+                    setShowChat(true);
+                  }
+                }}
+                disabled={!chatMessage.trim()}
+                className={cn(
+                  "flex items-center justify-center w-8 h-8 rounded-full transition-all",
+                  chatMessage.trim() 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-muted/60 text-muted-foreground"
+                )}
+              >
+                <Send className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  setShowChatInput(false);
+                  setChatMessage("");
+                }}
+                className="flex items-center h-8 px-3 rounded-full text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
 
           {/* Spacer */}
           <div className="flex-1" />
@@ -624,62 +674,6 @@ export default function ActiveSessionPage() {
           </div>
         )}
 
-        {/* Chat Input Box - Floating input at top when chat is active */}
-        {showChatInput && (
-          <div className="glass-strong rounded-2xl floating-shadow overflow-hidden animate-fade-in w-full max-w-[500px]">
-            <div className="flex items-center gap-2 p-3">
-              <input
-                type="text"
-                placeholder="Enter a message"
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && chatMessage.trim()) {
-                    // Simulate sending message and getting response
-                    setChatResponse({
-                      question: chatMessage,
-                      answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
-                    });
-                    setChatMessage("");
-                    setShowChatInput(false);
-                    setShowAIAnswer(true);
-                    setShowChat(true); // Mark that we have a chat response
-                  }
-                }}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
-              />
-              <button
-                onClick={() => {
-                  if (chatMessage.trim()) {
-                    setChatResponse({
-                      question: chatMessage,
-                      answer: "This is a simulated AI response to your question. In a real implementation, this would call the AI API and return an actual response based on your message."
-                    });
-                    setChatMessage("");
-                    setShowChatInput(false);
-                    setShowAIAnswer(true);
-                    setShowChat(true);
-                  }
-                }}
-                disabled={!chatMessage.trim()}
-                className={cn(
-                  "flex items-center justify-center w-10 h-10 rounded-xl transition-all",
-                  chatMessage.trim() 
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                    : "bg-muted/60 text-muted-foreground"
-                )}
-              >
-                <Send className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setShowChatInput(false)}
-                className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* End Session Confirmation Dialog */}
