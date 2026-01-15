@@ -132,8 +132,8 @@ const TopBar = memo(function TopBar({
   isListening,
 }: TopBarProps) {
   return (
-    <div className="relative z-[200] w-full max-w-[680px] mx-auto glass-strong backdrop-blur-sm border-b border-border/30 pointer-events-auto">
-      <div className="flex w-full flex-nowrap items-center justify-center gap-2 px-2.5 py-2 overflow-x-auto">
+    <div className="relative z-[200] w-full max-w-[680px] mx-auto glass-strong backdrop-blur-sm border-b border-border/30 pointer-events-auto overflow-visible">
+      <div className="flex w-full flex-nowrap items-center justify-center gap-2 px-2.5 py-2 overflow-visible">
         <button
           onClick={onToggleTranscript}
           className={cn(
