@@ -12,7 +12,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  AlertDialog as _AlertDialog,
   Sparkles,
   Monitor,
   MoreVertical,
@@ -263,7 +262,7 @@ const TopBar = memo(function TopBar({
           </button>
 
           {showMoreMenu && (
-            <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-popover border border-border shadow-xl z-[9999] overflow-hidden animate-fade-in pointer-events-auto">
+            <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-popover border border-border shadow-xl z-[9999] overflow-y-auto max-h-[300px] animate-fade-in pointer-events-auto">
               <div className="px-3 py-2 border-b border-border/50 text-xs text-muted-foreground">
                 More <span className="text-foreground">user@email.com</span>
               </div>
